@@ -1,23 +1,64 @@
-# helm charts downloaded by kustomize --enable-helm
-platform/**/charts/
-apps/**/charts/
+# ============================================================
+# Helm — charts downloaded by kustomize --enable-helm
+# ============================================================
+**/charts/
 
-# secrets — never commit these
+# ============================================================
+# Secrets — never commit credentials
+# ============================================================
 *.secret.yaml
 *.secrets.yaml
 *-secret.yaml
 *-secrets.yaml
 secrets/
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+.env
+.env.*
 
-# local overrides
+# ============================================================
+# Local overrides
+# ============================================================
 *.local.yaml
 override*.yaml
+local/
 
+# ============================================================
+# Terraform (if added later)
+# ============================================================
+**/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+crash.log
+
+# ============================================================
 # OS
+# ============================================================
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
 Thumbs.db
+desktop.ini
 
-# editors
+# ============================================================
+# Editors
+# ============================================================
 .vscode/
 .idea/
 *.swp
+*.swo
+*~
+*.orig
+
+# ============================================================
+# Logs & temp
+# ============================================================
+*.log
+tmp/
+temp/
