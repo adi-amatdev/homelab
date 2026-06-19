@@ -1,0 +1,23 @@
+# helm charts downloaded by kustomize --enable-helm
+platform/**/charts/
+apps/**/charts/
+
+# secrets — never commit these
+*.secret.yaml
+*.secrets.yaml
+*-secret.yaml
+*-secrets.yaml
+secrets/
+
+# local overrides
+*.local.yaml
+override*.yaml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# editors
+.vscode/
+.idea/
+*.swp

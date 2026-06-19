@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: d2m-test
+  namespace: infra
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/adi-amatdev/homelab
+    targetRevision: HEAD
+    path: apps/d2m-test
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: apps
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

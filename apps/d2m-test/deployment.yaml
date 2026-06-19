@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: d2m-test
+  namespace: apps
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: d2m-test
+  template:
+    metadata:
+      labels:
+        app: d2m-test
+    spec:
+      imagePullSecrets:
+        - name: ghcr-secret
+      containers:
+        - name: d2m-test
+          image: ghcr.io/adi-amatdev/d2m-windows:latest
+          ports:
+            - containerPort: 80
