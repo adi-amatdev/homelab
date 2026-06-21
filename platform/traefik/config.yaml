@@ -18,6 +18,7 @@ ingressRoute:
   dashboard:
     enabled: true
     entryPoints: ["web"]
+    matchRule: "Host(`traefik.local`) && (PathPrefix(`/dashboard`) || PathPrefix(`/api`))"
 
 service:
   type: LoadBalancer
