@@ -33,7 +33,7 @@ targetPort: <port>
 ## 2. Register with ArgoCD
 
 ```bash
-cp platform/argocd-apps/_template.yaml platform/argocd-apps/<your-app>.yaml
+cp apps/_template/argocd-app.yaml platform/argocd-apps/apps/<your-app>.yaml
 ```
 
 Edit the two fields:

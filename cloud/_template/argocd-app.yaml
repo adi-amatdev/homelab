@@ -1,20 +1,20 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: root
+  name: <your-app>
   namespace: infra
 spec:
   project: default
   source:
     repoURL: https://github.com/adi-amatdev/homelab
     targetRevision: HEAD
-    path: platform/argocd-apps
-    directory:
-      recurse: true
+    path: cloud/<your-app>
   destination:
     server: https://kubernetes.default.svc
-    namespace: infra
+    namespace: cloud
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

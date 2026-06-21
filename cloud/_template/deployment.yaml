@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: <your-app>
+  namespace: cloud
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: <your-app>
+  template:
+    metadata:
+      labels:
+        app: <your-app>
+    spec:
+      containers:
+        - name: <your-app>
+          image: <upstream-image>:latest
+          ports:
+            - containerPort: <port>
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      volumes:
+        - name: data
+          hostPath:
+            path: /home/aadi/store/<your-app>-data
+            type: DirectoryOrCreate
