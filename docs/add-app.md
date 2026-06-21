@@ -9,7 +9,10 @@ The root ArgoCD app watches `platform/argocd-apps/`. Drop a file there, push, it
 ## 1. Copy the app template
 
 ```bash
-cp -r apps/_template apps/<your-app>
+cp templates/deployment.yaml apps/<your-app>/deployment.yaml
+cp templates/service.yaml apps/<your-app>/service.yaml
+cp templates/kustomization.yaml apps/<your-app>/kustomization.yaml
+cp templates/namespace.yaml apps/<your-app>/namespace.yaml
 ```
 
 Edit `deployment.yaml`:
@@ -33,7 +36,7 @@ targetPort: <port>
 ## 2. Register with ArgoCD
 
 ```bash
-cp apps/_template/argocd-app.yaml platform/argocd-apps/apps/<your-app>.yaml
+cp templates/argocd-app.yaml platform/argocd-apps/apps/<your-app>.yaml
 ```
 
 Edit the two fields:

@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: <your-app>
-  namespace: cloud
+  namespace: <namespace>        # apps | cloud | ai
 spec:
   replicas: 1
   selector:
@@ -13,14 +13,19 @@ spec:
       labels:
         app: <your-app>
     spec:
+      # remove if using a public upstream image
+      imagePullSecrets:
+        - name: ghcr-secret
       containers:
         - name: <your-app>
-          image: <upstream-image>:latest
+          image: <image>:latest  # ghcr.io/<org>/<app>:latest — or upstream image
           ports:
             - containerPort: <port>
+          # remove if no persistent storage needed
           volumeMounts:
             - name: data
               mountPath: /data
+      # remove if no persistent storage needed
       volumes:
         - name: data
           hostPath:

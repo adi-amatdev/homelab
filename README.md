@@ -48,7 +48,7 @@ platform/
     root.yaml            — the only manifest ever manually applied
     _template.yaml       — copy this for each new app
 apps/                    — k8s manifests per app
-  _template/             — copy this for each new app
+  templates/             — copy these to add new apps
 docs/
   knowledge.md           — how everything works
   kubectl.md             — debug commands
@@ -79,8 +79,8 @@ Step 3 is the **only** `kubectl apply` that ever needs to run again. After that,
 ## Adding a New App
 
 ```bash
-cp -r apps/_template apps/<your-app>
-cp platform/argocd-apps/_template.yaml platform/argocd-apps/<your-app>.yaml
+cp -r templates/apps apps/<your-app>
+cp templates/apps/argocd-app.yaml platform/argocd-apps/apps/<your-app>.yaml
 # edit both — update name, namespace, image, host
 git add . && git commit -m "add <your-app>" && git push
 ```

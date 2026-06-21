@@ -8,10 +8,10 @@ spec:
   source:
     repoURL: https://github.com/adi-amatdev/homelab
     targetRevision: HEAD
-    path: ai/<your-app>
+    path: <apps|cloud|ai>/<your-app>  # match the top-level folder
   destination:
     server: https://kubernetes.default.svc
-    namespace: ai
+    namespace: <namespace>            # apps | cloud | ai
   syncPolicy:
     automated:
       prune: true
