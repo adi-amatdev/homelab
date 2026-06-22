@@ -18,17 +18,14 @@ Watches this git repo. Applies manifests to the cluster automatically. Git is al
 
 ### App of Apps
 
-`argocd-apps/root.yaml` is applied once manually. It watches the entire `argocd-apps/` folder recursively — every `.yaml` file in any subdirectory is a managed ArgoCD Application.
+`platform/argocd-apps/root.yaml` is applied once manually. It watches the entire `platform/argocd-apps/` folder — every `.yaml` file there is a managed ArgoCD Application.
 
 ```
-kubectl apply -f argocd-apps/root.yaml   ← once, ever
+kubectl apply -f platform/argocd-apps/root.yaml   ← once, ever
 
-root.yaml watches argocd-apps/
-  ├── platform/
-  │   ├── argocd.yaml   → manages ArgoCD itself via Helm (self-managing)
-  │   └── traefik.yaml   → manages Traefik via Helm
-  ├── apps/              → user apps (Deployment + Service + Ingress via Kustomize)
-  └── cloud/             → cloud services (via Kustomize)
+root.yaml watches platform/argocd-apps/
+  ├── app-a.yaml    → syncs apps/app-a/
+  └── app-b.yaml    → git push → auto deployed
 ```
 
 Key behaviours:
@@ -36,26 +33,26 @@ Key behaviours:
 - `prune: true` — delete a file from git, ArgoCD deletes the resource from the cluster
 - polls every 3 minutes automatically, no manual sync needed
 
-### Self-managing platform
+---
 
-ArgoCD and Traefik are deployed **by ArgoCD itself** using native Helm support (multi-source: chart from Helm repo, values from this git repo). No Kustomize wrapper needed.
+## Kustomize
 
-First-time bootstrap (only needed if the cluster is bare):
+Templating layer over raw k8s YAML. Used here to bundle Helm charts with custom values.
 
-```bash
-# 1. Install ArgoCD manually once (can't manage itself before it's running)
-helm repo add argo https://argoproj.github.io/argo-helm
-helm upgrade --install argocd argo/argo-cd -n infra \
-  --create-namespace -f platform/argocd/values.yaml
-
-# 2. Bootstrap the root app — ArgoCD takes over everything
-kubectl apply -f argocd-apps/root.yaml
-
-# 3. (optional) Watch ArgoCD come up
-kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=argocd-server -n infra
+```yaml
+helmCharts:
+  - name: argo-cd
+    repo: https://argoproj.github.io/argo-helm
+    version: "7.8.23"
+    valuesFile: values.yaml
 ```
 
-After step 2, ArgoCD manages itself, Traefik, and all apps. No more `kubectl apply`.
+```bash
+kustomize build --enable-helm platform/argocd/                        # preview
+kustomize build --enable-helm platform/argocd/ | kubectl apply -f -  # apply
+```
+
+`--enable-helm` is required when the kustomization references Helm charts.
 
 ---
 
@@ -63,7 +60,7 @@ After step 2, ArgoCD manages itself, Traefik, and all apps. No more `kubectl app
 
 Package manager for k8s. Pre-built templates for common tools (ArgoCD, Traefik, Prometheus etc).
 
-Platform components (ArgoCD, Traefik) use native Helm via ArgoCD — the chart comes from the upstream Helm repo, and our custom values come from files in this repo.
+Not called directly — used through Kustomize. The `values.yaml` or `config.yaml` next to each `kustomization.yaml` is the Helm values override file for that chart.
 
 ---
 
@@ -79,19 +76,9 @@ browser → myapp.local
         → pod
 ```
 
-Config lives in `platform/traefik/values.yaml`. Every Ingress resource needs `ingressClassName: traefik`.
+Config lives in `platform/traefik/config.yaml`. Every Ingress resource needs `ingressClassName: traefik`.
 
 ArgoCD is configured with `server.insecure: true` — TLS terminates at Traefik, not the app.
-
----
-
-## Domain Configuration
-
-All app hostnames use the `$(DOMAIN)` variable, resolved centrally from `config/kustomization.yaml` (currently `domain=local`). To change the domain suffix for all apps at once:
-
-1. Edit `config/kustomization.yaml` — change `domain=local` to `domain=mydomain.com`
-2. Update host references in `platform/traefik/values.yaml` and `platform/argocd/values.yaml` (Helm values aren't Kustomize-processed)
-3. Commit and push — ArgoCD syncs everything
 
 ---
 
@@ -165,7 +152,7 @@ Tells Traefik which hostname routes to which service.
 spec:
   ingressClassName: traefik
   rules:
-    - host: myapp.$(DOMAIN)
+    - host: myapp.local
       http:
         paths:
           - path: /
@@ -176,8 +163,6 @@ spec:
                 port:
                   number: 80
 ```
-
-`$(DOMAIN)` is resolved by Kustomize from `config/kustomization.yaml` — currently `local`.
 
 ---
 

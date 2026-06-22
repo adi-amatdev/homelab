@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://github.com/adi-amatdev/homelab
     targetRevision: HEAD
-    path: argocd-apps
+    path: platform/argocd-apps
     directory:
       recurse: true
   destination:

@@ -2,7 +2,7 @@
 
 3 steps. No `kubectl apply` needed.
 
-The root ArgoCD app watches `argocd-apps/`. Drop a file there, push, it's deployed.
+The root ArgoCD app watches `platform/argocd-apps/`. Drop a file there, push, it's deployed.
 
 ---
 
@@ -12,6 +12,7 @@ The root ArgoCD app watches `argocd-apps/`. Drop a file there, push, it's deploy
 cp templates/deployment.yaml apps/<your-app>/deployment.yaml
 cp templates/service.yaml apps/<your-app>/service.yaml
 cp templates/kustomization.yaml apps/<your-app>/kustomization.yaml
+cp templates/namespace.yaml apps/<your-app>/namespace.yaml
 ```
 
 Edit `deployment.yaml`:
@@ -24,18 +25,18 @@ containerPort: <port>
 Edit `service.yaml`:
 ```yaml
 name: <your-app>
-host: <your-app>.$(DOMAIN)
+host: <your-app>.local
 targetPort: <port>
 ```
 
-`kustomization.yaml` already includes `../../config` and defines the `$(DOMAIN)` variable — no changes needed unless you add extra resources.
+`kustomization.yaml` already references both — no changes needed unless you add extra resources.
 
 ---
 
 ## 2. Register with ArgoCD
 
 ```bash
-cp templates/argocd-app.yaml argocd-apps/apps/<your-app>.yaml
+cp templates/argocd-app.yaml platform/argocd-apps/apps/<your-app>.yaml
 ```
 
 Edit the two fields:
@@ -48,8 +49,6 @@ spec:
   destination:
     namespace: apps    # change if using a different namespace
 ```
-
-No need to create a Namespace resource — `CreateNamespace=true` in the Application handles it.
 
 ---
 
@@ -98,13 +97,3 @@ kubectl create secret docker-registry ghcr-secret \
   --docker-username=<github-username> \
   --docker-password=<PAT with read:packages>
 ```
-
----
-
-## Changing the domain
-
-All Kustomize-managed apps use `$(DOMAIN)` resolved from `config/domain` (currently `local`). To switch domains:
-
-1. Edit `config/domain` (e.g., `local` → `mydomain.com`)
-2. Update `platform/traefik/values.yaml` and `platform/argocd/values.yaml` — these use hardcoded hostnames since Helm values aren't templated
-3. Commit and push — ArgoCD syncs everything

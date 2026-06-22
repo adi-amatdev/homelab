@@ -1,11 +1,9 @@
-domain: local
-
 global:
   domain: argocd.local
 
 configs:
   params:
-    server.insecure: true
+    server.insecure: true  # TLS terminated at Traefik
 
 server:
   ingress:
