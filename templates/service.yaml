@@ -18,7 +18,7 @@ metadata:
 spec:
   ingressClassName: traefik
   rules:
-    - host: <your-app>.$(DOMAIN)
+    - host: <your-app>.local
       http:
         paths:
           - path: /

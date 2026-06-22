@@ -22,7 +22,7 @@ metadata:
 spec:
   ingressClassName: traefik
   rules:
-    - host: s3.$(DOMAIN)
+    - host: s3.local
       http:
         paths:
           - path: /
@@ -32,7 +32,7 @@ spec:
                 name: minio
                 port:
                   number: 9000
-    - host: minio.$(DOMAIN)
+    - host: minio.local
       http:
         paths:
           - path: /
