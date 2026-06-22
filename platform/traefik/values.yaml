@@ -1,3 +1,5 @@
+domain: local
+
 globalArguments:
   - "--global.sendanonymoususage=false"
 

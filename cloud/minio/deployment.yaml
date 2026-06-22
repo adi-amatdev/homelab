@@ -33,18 +33,18 @@ spec:
                   name: minio-secret
                   key: MINIO_ROOT_PASSWORD
             - name: MINIO_BROWSER_REDIRECT_URL
-              value: "http://minio.local"
+              value: "http://minio.$(DOMAIN)"
           ports:
-            - containerPort: 9000  # S3 API
-            - containerPort: 9001  # console
+            - containerPort: 9000
+            - containerPort: 9001
           volumeMounts:
             - name: data
               mountPath: /data
       hostAliases:
         - ip: "127.0.0.1"
           hostnames:
-            - "s3.local"
-            - "minio.local"
+            - "s3.$(DOMAIN)"
+            - "minio.$(DOMAIN)"
       volumes:
         - name: data
           hostPath:

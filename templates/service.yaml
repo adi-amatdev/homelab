@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: <your-app>
-  namespace: <namespace>        # apps | cloud | ai
+  namespace: <namespace>
 spec:
   selector:
     app: <your-app>
@@ -14,11 +14,11 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: <your-app>
-  namespace: <namespace>        # apps | cloud | ai
+  namespace: <namespace>
 spec:
   ingressClassName: traefik
   rules:
-    - host: <your-app>.local
+    - host: <your-app>.$(DOMAIN)
       http:
         paths:
           - path: /
