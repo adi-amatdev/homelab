@@ -13,6 +13,10 @@ ports:
     port: 443
     exposedPort: 443
     protocol: TCP
+  postgres:
+    port: 5432
+    exposedPort: 5432
+    protocol: TCP
 
 ingressRoute:
   dashboard:
