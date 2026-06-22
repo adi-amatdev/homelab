@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://github.com/adi-amatdev/homelab
     targetRevision: HEAD
-    path: cloud/minio
+    path: k8s/cloud/minio
   destination:
     server: https://kubernetes.default.svc
     namespace: cloud

@@ -18,13 +18,13 @@ Watches this git repo. Applies manifests to the cluster automatically. Git is al
 
 ### App of Apps
 
-`platform/argocd-apps/root.yaml` is applied once manually. It watches the entire `platform/argocd-apps/` folder — every `.yaml` file there is a managed ArgoCD Application.
+`argocd-apps/root.yaml` is applied once manually. It watches the entire `argocd-apps/` folder — every `.yaml` file there is a managed ArgoCD Application.
 
 ```
-kubectl apply -f platform/argocd-apps/root.yaml   ← once, ever
+kubectl apply -f argocd-apps/root.yaml   ← once, ever
 
-root.yaml watches platform/argocd-apps/
-  ├── app-a.yaml    → syncs apps/app-a/
+root.yaml watches argocd-apps/
+  ├── app-a.yaml    → syncs k8s/apps/app-a/
   └── app-b.yaml    → git push → auto deployed
 ```
 
@@ -48,8 +48,8 @@ helmCharts:
 ```
 
 ```bash
-kustomize build --enable-helm platform/argocd/                        # preview
-kustomize build --enable-helm platform/argocd/ | kubectl apply -f -  # apply
+kustomize build --enable-helm k8s/platform/argocd/                        # preview
+kustomize build --enable-helm k8s/platform/argocd/ | kubectl apply -f -  # apply
 ```
 
 `--enable-helm` is required when the kustomization references Helm charts.
@@ -76,7 +76,7 @@ browser → myapp.local
         → pod
 ```
 
-Config lives in `platform/traefik/config.yaml`. Every Ingress resource needs `ingressClassName: traefik`.
+Config lives in `k8s/platform/traefik/config.yaml`. Every Ingress resource needs `ingressClassName: traefik`.
 
 ArgoCD is configured with `server.insecure: true` — TLS terminates at Traefik, not the app.
 

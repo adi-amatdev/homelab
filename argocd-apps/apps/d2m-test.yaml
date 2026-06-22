@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://github.com/adi-amatdev/homelab
     targetRevision: HEAD
-    path: apps/d2m-test
+    path: k8s/apps/d2m-test
   destination:
     server: https://kubernetes.default.svc
     namespace: apps

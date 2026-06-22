@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://github.com/adi-amatdev/homelab
     targetRevision: HEAD
-    path: <apps|cloud|ai>/<your-app>  # match the top-level folder
+    path: k8s/<apps|cloud|ai>/<your-app>
   destination:
     server: https://kubernetes.default.svc
     namespace: <namespace>            # apps | cloud | ai

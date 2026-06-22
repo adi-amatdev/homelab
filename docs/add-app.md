@@ -2,17 +2,17 @@
 
 3 steps. No `kubectl apply` needed.
 
-The root ArgoCD app watches `platform/argocd-apps/`. Drop a file there, push, it's deployed.
+The root ArgoCD app watches `argocd-apps/`. Drop a file there, push, it's deployed.
 
 ---
 
 ## 1. Copy the app template
 
 ```bash
-cp templates/deployment.yaml apps/<your-app>/deployment.yaml
-cp templates/service.yaml apps/<your-app>/service.yaml
-cp templates/kustomization.yaml apps/<your-app>/kustomization.yaml
-cp templates/namespace.yaml apps/<your-app>/namespace.yaml
+cp templates/deployment.yaml k8s/apps/<your-app>/deployment.yaml
+cp templates/service.yaml k8s/apps/<your-app>/service.yaml
+cp templates/kustomization.yaml k8s/apps/<your-app>/kustomization.yaml
+cp templates/namespace.yaml k8s/apps/<your-app>/namespace.yaml
 ```
 
 Edit `deployment.yaml`:
@@ -36,7 +36,7 @@ targetPort: <port>
 ## 2. Register with ArgoCD
 
 ```bash
-cp templates/argocd-app.yaml platform/argocd-apps/apps/<your-app>.yaml
+cp templates/argocd-app.yaml argocd-apps/apps/<your-app>.yaml
 ```
 
 Edit the two fields:
@@ -45,7 +45,7 @@ metadata:
   name: <your-app>
 spec:
   source:
-    path: apps/<your-app>
+    path: k8s/apps/<your-app>
   destination:
     namespace: apps    # change if using a different namespace
 ```
