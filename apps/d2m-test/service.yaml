@@ -18,7 +18,7 @@ metadata:
 spec:
   ingressClassName: traefik
   rules:
-    - host: d2m-test.local
+    - host: d2m-test.$(DOMAIN)
       http:
         paths:
           - path: /

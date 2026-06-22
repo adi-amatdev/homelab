@@ -85,6 +85,16 @@ ArgoCD is configured with `server.insecure: true` — TLS terminates at Traefik,
 
 ---
 
+## Domain Configuration
+
+All app hostnames use the `$(DOMAIN)` variable, resolved centrally from `config/kustomization.yaml` (currently `domain=local`). To change the domain suffix for all apps at once:
+
+1. Edit `config/kustomization.yaml` — change `domain=local` to `domain=mydomain.com`
+2. Update host references in `platform/traefik/values.yaml` and `platform/argocd/values.yaml` (Helm values aren't Kustomize-processed)
+3. Commit and push — ArgoCD syncs everything
+
+---
+
 ## cert-manager `🔜 not yet deployed`
 
 Will automatically provision and renew TLS certs from Let's Encrypt. Once deployed, Ingress resources get HTTPS via a `cert-manager.io/cluster-issuer` annotation.
@@ -167,7 +177,7 @@ spec:
                   number: 80
 ```
 
-All app hostnames use `.local`. Edit each Ingress rule to change the domain later.
+`$(DOMAIN)` is resolved by Kustomize from `config/kustomization.yaml` — currently `local`.
 
 ---
 

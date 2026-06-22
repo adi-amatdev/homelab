@@ -24,9 +24,11 @@ containerPort: <port>
 Edit `service.yaml`:
 ```yaml
 name: <your-app>
-host: <your-app>.local
+host: <your-app>.$(DOMAIN)
 targetPort: <port>
 ```
+
+`kustomization.yaml` already includes `../../config` and defines the `$(DOMAIN)` variable — no changes needed unless you add extra resources.
 
 ---
 
@@ -97,4 +99,12 @@ kubectl create secret docker-registry ghcr-secret \
   --docker-password=<PAT with read:packages>
 ```
 
+---
 
+## Changing the domain
+
+All Kustomize-managed apps use `$(DOMAIN)` resolved from `config/domain` (currently `local`). To switch domains:
+
+1. Edit `config/domain` (e.g., `local` → `mydomain.com`)
+2. Update `platform/traefik/values.yaml` and `platform/argocd/values.yaml` — these use hardcoded hostnames since Helm values aren't templated
+3. Commit and push — ArgoCD syncs everything
