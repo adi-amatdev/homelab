@@ -69,9 +69,9 @@ Not called directly — used through Kustomize. The `values.yaml` or `config.yam
 Ingress controller. Routes external HTTP traffic to services by hostname.
 
 ```
-browser → myapp.local
+browser → myapp.homelab
   → Traefik
-    → matches Ingress rule host: myapp.local
+    → matches Ingress rule host: myapp.homelab
       → forwards to myapp service:80
         → pod
 ```
@@ -152,7 +152,7 @@ Tells Traefik which hostname routes to which service.
 spec:
   ingressClassName: traefik
   rules:
-    - host: myapp.local
+    - host: myapp.homelab
       http:
         paths:
           - path: /

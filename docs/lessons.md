@@ -42,8 +42,8 @@ When something broke, it was impossible to tell which change caused it.
 
 ---
 
-## 5. `.local` is fine. Parameterization can wait.
+## 5. `.homelab` is fine. Parameterization can wait.
 
-Hardcoding `.local` is simple, readable, and works. Domain parameterization adds complexity with no immediate benefit. Premature abstraction introduced a fragile `vars`/`config` dependency that broke in production.
+Hardcoding `.homelab` is simple, readable, and works. Domain parameterization adds complexity with no immediate benefit. Premature abstraction introduced a fragile `vars`/`config` dependency that broke in production.
 
 **Lesson:** Don't parameterize until the parameter actually needs to change. When it does, use a mechanism you understand end-to-end and test before deploying.

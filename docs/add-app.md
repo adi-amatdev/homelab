@@ -25,7 +25,7 @@ containerPort: <port>
 Edit `service.yaml`:
 ```yaml
 name: <your-app>
-host: <your-app>.local
+host: <your-app>.homelab
 targetPort: <port>
 ```
 
@@ -58,7 +58,7 @@ spec:
 git add . && git commit -m "add <your-app>" && git push
 ```
 
-ArgoCD syncs within ~3 minutes. Monitor at `http://argocd.local`.
+ArgoCD syncs within ~3 minutes. Monitor at `http://argocd.homelab`.
 
 ---
 
@@ -67,7 +67,7 @@ ArgoCD syncs within ~3 minutes. Monitor at `http://argocd.local`.
 Until Cloudflared is set up, add each app to `/etc/hosts` on any machine that needs to reach it:
 
 ```bash
-echo "<traefik-lb-ip>  <your-app>.local" | sudo tee -a /etc/hosts
+echo "<traefik-lb-ip>  <your-app>.homelab" | sudo tee -a /etc/hosts
 ```
 
 Get the Traefik LB IP:

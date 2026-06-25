@@ -1,5 +1,5 @@
 global:
-  domain: argocd.local
+  domain: argocd.homelab
 
 configs:
   params:
@@ -9,4 +9,4 @@ server:
   ingress:
     enabled: true
     ingressClassName: traefik
-    hostname: argocd.local
+    hostname: argocd.homelab

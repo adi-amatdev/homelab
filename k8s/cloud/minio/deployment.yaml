@@ -33,7 +33,7 @@ spec:
                   name: minio-secret
                   key: MINIO_ROOT_PASSWORD
             - name: MINIO_BROWSER_REDIRECT_URL
-              value: "http://minio.local"
+              value: "http://minio.homelab"
           ports:
             - containerPort: 9000  # S3 API
             - containerPort: 9001  # console
@@ -43,8 +43,8 @@ spec:
       hostAliases:
         - ip: "127.0.0.1"
           hostnames:
-            - "s3.local"
-            - "minio.local"
+            - "s3.homelab"
+            - "minio.homelab"
       volumes:
         - name: data
           hostPath:

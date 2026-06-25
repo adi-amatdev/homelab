@@ -50,7 +50,7 @@ kubectl get secret argocd-initial-admin-secret -n infra \
   -o jsonpath="{.data.password}" | base64 -d
 
 # force sync (requires argocd CLI)
-argocd app sync <name> --server argocd.local --insecure
+argocd app sync <name> --server argocd.homelab --insecure
 ```
 
 ---
