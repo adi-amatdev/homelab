@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: redis
+  namespace: infra
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/adi-amatdev/homelab
+    targetRevision: HEAD
+    path: k8s/cloud/redis
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: cloud
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
