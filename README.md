@@ -2,8 +2,6 @@
 
 Personal Kubernetes homelab on k3s. Fully GitOps — push to git, cluster self-updates via ArgoCD.
 
-> Architecture diagram coming soon.
-
 ---
 
 ## Stack
@@ -13,10 +11,8 @@ Personal Kubernetes homelab on k3s. Fully GitOps — push to git, cluster self-u
 | Cluster | k3s |
 | GitOps | ArgoCD |
 | Ingress | Traefik |
-| TLS | cert-manager + Let's Encrypt |
-| Tunnel | Cloudflared |
+| DNS | AdGuard Home (Tailnet Split DNS) |
 | Registry | GHCR |
-| Monitoring | Prometheus + Grafana |
 
 ---
 
@@ -33,59 +29,75 @@ One rule: **git is the source of truth**. Never `kubectl apply` manually unless 
 
 ---
 
+## Deployments
+
+| Service | Namespace | Access |
+|---|---|---|
+| ArgoCD | `infra` | argocd.homelab |
+| Traefik | `infra` | traefik.homelab (dashboard) |
+| MinIO | `cloud` | minio.homelab, s3.homelab |
+| PostgreSQL | `cloud` | postgres.cloud.svc.cluster.local:5432 |
+| Redis | `cloud` | redis.cloud.svc.cluster.local:6379 |
+| AdGuard Home | `cloud` | adguard.homelab (admin), tailnet-ip:53 (DNS) for tailnet-device access |
+| d2m-test | `apps` | d2m-test.homelab |
+
+---
+
 ## Repo Structure
 
 ```
-platform/
-  argocd/                — ArgoCD install (Helm via Kustomize)
-    kustomization.yaml
-    values.yaml
-    namespace.yaml
-  traefik/               — ingress controller (Helm via Kustomize)
-    kustomization.yaml
-    config.yaml
-  argocd-apps/           — app-of-apps registry
-    root.yaml            — the only manifest ever manually applied
-    _template.yaml       — copy this for each new app
-apps/                    — k8s manifests per app
-  templates/             — copy these to add new apps
+k8s/
+  platform/              — platform components (applied manually)
+    argocd/              — ArgoCD install (Helm via Kustomize)
+    traefik/             — ingress controller (Helm via Kustomize)
+  cloud/                 — shared infra services
+    minio/
+    postgres/
+    redis/
+    adguard/
+  apps/                  — personal projects
+    d2m-test/
+argocd-apps/             — app-of-apps registry (auto-synced by root)
+  root.yaml              — the only manifest ever manually applied
+  cloud/                 — ArgoCD Applications for cloud services
+  apps/                  — ArgoCD Applications for app projects
 docs/
   knowledge.md           — how everything works
   kubectl.md             — debug commands
   add-app.md             — adding a new app
+  lessons.md             — mistakes documented
+  history.md             — project history & challenges
+templates/               — copy these to add new apps
 ```
 
 ---
 
 ## Bootstrap
 
-ArgoCD and Traefik are deployed via Kustomize + Helm. Run these once to stand up the cluster:
+ArgoCD and Traefik are deployed via Kustomize + Helm. Run these once:
 
 ```bash
-# 1. deploy traefik
-kustomize build --enable-helm platform/traefik/ | kubectl apply -f -
-
-# 2. deploy argocd
-kustomize build --enable-helm platform/argocd/ | kubectl apply -f -
-
-# 3. bootstrap the root app — once, ever
-kubectl apply -f platform/argocd-apps/root.yaml
+kustomize build --enable-helm k8s/platform/traefik/ | kubectl apply -f -
+kustomize build --enable-helm k8s/platform/argocd/ | kubectl apply -f -
+kubectl apply -f argocd-apps/root.yaml
 ```
 
-Step 3 is the **only** `kubectl apply` that ever needs to run again. After that, everything is git.
+The last command is the **only** `kubectl apply` you'll ever need again.
 
 ---
 
 ## Adding a New App
 
 ```bash
-cp -r templates/apps apps/<your-app>
-cp templates/apps/argocd-app.yaml platform/argocd-apps/apps/<your-app>.yaml
-# edit both — update name, namespace, image, host
+cp templates/deployment.yaml k8s/apps/<your-app>/deployment.yaml
+cp templates/service.yaml k8s/apps/<your-app>/service.yaml
+cp templates/kustomization.yaml k8s/apps/<your-app>/kustomization.yaml
+cp templates/argocd-app.yaml argocd-apps/apps/<your-app>.yaml
+# edit files — set name, image, port, namespace
 git add . && git commit -m "add <your-app>" && git push
 ```
 
-The root ArgoCD app watches `platform/argocd-apps/` — your new app is picked up automatically. No `kubectl apply` needed. See `docs/add-app.md` for the full walkthrough.
+ArgoCD picks it up automatically in ~3 minutes. See `docs/add-app.md` for details.
 
 ---
 
@@ -93,25 +105,6 @@ The root ArgoCD app watches `platform/argocd-apps/` — your new app is picked u
 
 | Namespace | Purpose |
 |---|---|
-| `infra` | ArgoCD, Traefik, cert-manager, cloudflared |
-| `apps` | All personal projects |
-| `monitoring` | Prometheus, Grafana |
-| `ai` | Ollama, LiteLLM, OpenWebUI |
-| `cloud` | MinIO, LocalStack |
-
-<!--
-## Apps
-
-| App | Namespace |
-|---|---|
-| d2m-test | apps |
-| portfolio | apps |
-| api | apps |
-| rag / knowledge platform | apps |
-| jobtracker | apps |
-| ollama | ai |
-| litellm | ai |
-| openwebui | ai |
-| minio | cloud |
-| localstack | cloud |
--->
+| `infra` | ArgoCD, Traefik |
+| `cloud` | MinIO, PostgreSQL, Redis, AdGuard Home |
+| `apps` | Personal projects |

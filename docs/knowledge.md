@@ -98,6 +98,36 @@ Once deployed, the `/etc/hosts` workaround for local DNS goes away — apps will
 
 ---
 
+## DNS Architecture
+
+Three independent DNS paths:
+
+### Tailnet devices (laptop, phone)
+```
+Browser → OS DNS (Tailscale 100.100.100.100)
+  → Split DNS: *.homelab → 100.93.76.126
+    → AdGuard (hostNetwork, port 53 on host)
+      → DNS rewrite: *.homelab → 100.93.76.126
+        → Returns 100.93.76.126
+Browser connects to 100.93.76.126:80
+  → Host port 80 → Traefik (via kube-proxy NodePort)
+    → Ingress matches Host header → routes to service → pod
+```
+
+### Pods inside cluster
+```
+Container → CoreDNS (10.43.0.10) → NXDOMAIN for .homelab
+```
+
+### Host (Ubuntu)
+```
+Process → systemd-resolved (127.0.0.53) → upstream DNS (1.1.1.1)
+```
+
+No path depends on another — pods and the host resolve independently of AdGuard.
+
+---
+
 ## Monitoring `🔜 not yet deployed`
 
 Planned: `kube-prometheus-stack` Helm chart (Prometheus + Grafana + alerting) in the `monitoring` namespace.
