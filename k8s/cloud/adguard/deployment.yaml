@@ -13,19 +13,19 @@ spec:
       labels:
         app: adguard
     spec:
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
       containers:
         - name: adguard
           image: adguard/adguardhome:latest
           ports:
             - containerPort: 53
-              hostPort: 53
               protocol: TCP
               name: dns-tcp
             - containerPort: 53
-              hostPort: 53
               protocol: UDP
               name: dns-udp
-            - containerPort: 80
+            - containerPort: 8080
               name: admin
             - containerPort: 3000
               name: setup

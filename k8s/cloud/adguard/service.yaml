@@ -7,17 +7,9 @@ spec:
   selector:
     app: adguard
   ports:
-    - name: dns-tcp
-      port: 53
-      targetPort: 53
-      protocol: TCP
-    - name: dns-udp
-      port: 53
-      targetPort: 53
-      protocol: UDP
     - name: admin
       port: 80
-      targetPort: 80
+      targetPort: 8080
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
