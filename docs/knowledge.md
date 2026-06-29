@@ -126,6 +126,8 @@ Process → systemd-resolved (127.0.0.53) → upstream DNS (1.1.1.1)
 
 No path depends on another — pods and the host resolve independently of AdGuard.
 
+The full journey to this architecture (including failed attempts) is documented in [`docs/solved/internal-dns-with-adguard.md`](solved/internal-dns-with-adguard.md).
+
 ---
 
 ## Monitoring `🔜 not yet deployed`
