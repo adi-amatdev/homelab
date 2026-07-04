@@ -77,6 +77,45 @@ ArgoCD syncs within ~3 minutes. Monitor at `http://argocd.homelab`.
 
 ---
 
+## 4. Add environment variables
+
+After the app is deployed, inject its env vars via a Kubernetes Secret. The app uses `--secrets-encryption` — secrets are encrypted at rest in etcd.
+
+```bash
+# 1. Create a .env file locally (gitignored — never commit it)
+cat > .env << EOF
+DATABASE_URL=postgresql://user:pass@<service>.<namespace>:5432/db
+SOME_KEY=value
+EOF
+
+# 2. Create the Secret
+kubectl create secret generic <app>-env --from-env-file=.env -n <namespace>
+
+# 3. Add envFrom to your deployment.yaml and push
+```
+
+In the Deployment:
+```yaml
+spec:
+  containers:
+    - envFrom:
+        - secretRef:
+            name: <app>-env
+```
+
+**Important:** `.env` values must NOT have quotes around them (`KEY=value` not `KEY="value"`). The `--from-env-file` flag treats quotes as literal characters.
+
+**DNS note:** Pods resolve each other via CoreDNS. The `.homelab` domain is unavailable inside the cluster — use `<service>.<namespace>` instead (see [Secrets → DNS](/knowledge.md#dns-and-inter-pod-connectivity) in the knowledge manual).
+
+To update an existing app's env vars:
+```bash
+kubectl delete secret <app>-env -n <namespace>
+kubectl create secret generic <app>-env --from-env-file=.env -n <namespace>
+kubectl rollout restart deployment/<app> -n <namespace>
+```
+
+---
+
 ## Local DNS
 
 Until Cloudflared is set up, add each app to `/etc/hosts` on any machine that needs to reach it:

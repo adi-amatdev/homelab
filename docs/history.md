@@ -80,7 +80,21 @@ This was the most iterative phase (see the [full postmortem](/solved/internal-dn
 
 ---
 
-## Phase 5: The Sealed Secrets Detour (July 4)
+## Phase 5: First App + Secrets (July 4)
+
+**Commits: `okf bundle, blogs and sealed secret deployment` → `purge sealed-secrets` → multiple fixes**
+
+Deployed the first real application — a Next.js blog. Started by attempting Sealed Secrets for env var management, which failed due to `.gitignore` patterns, ArgoCD helmCharts incompatibility, and Docker permission issues.
+
+**Resolution:** Dropped Sealed Secrets entirely. Use plain Kubernetes Secrets created from a local `.env` file. k3s has `--secrets-encryption` enabled, so secrets are encrypted at rest in etcd — good enough for a single-node homelab.
+
+**Key fixes during deployment:**
+- `.env` file values must not have quotes — `--from-env-file` treats them literally
+- Pod-to-pod DNS uses `<service>.<namespace>`, not `.homelab` (CoreDNS doesn't resolve `.homelab`)
+- Image name `blog` vs `blogs` — verify GHCR repo name matches the deployment image
+- Only one ArgoCD app should own a namespace via `namespace.yaml`
+
+**Current state:** Blog is running at `http://blogs.homelab` with DATABASE_URL pointing to `postgres.cloud`, connected to the Postgres instance in the `cloud` namespace.
 
 **Commits: `okf bundle, blogs and sealed secret deployment` → `purge sealed-secrets`**
 

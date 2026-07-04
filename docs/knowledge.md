@@ -3,7 +3,7 @@ type: Architecture Reference
 title: Homelab Knowledge Manual
 description: Comprehensive reference covering k3s, ArgoCD, Kustomize, Helm, Traefik, cert-manager, DNS architecture, and cluster operations.
 tags: [kubernetes, architecture, reference, homelab]
-timestamp: 2026-06-26T00:00:00Z
+timestamp: 2026-07-04T00:00:00Z
 ---
 
 # Knowledge Manual
@@ -208,11 +208,58 @@ spec:
 
 ---
 
-## GHCR
+## Secrets
 
-Docker images live here. GitHub Actions builds and pushes on every push to `main` using `GITHUB_TOKEN` — no manual secret needed on the GitHub side.
+### Encryption at rest
 
-The cluster needs a pull secret to access private images:
+k3s is started with `--secrets-encryption`, which enables symmetric encryption of Secret resources in etcd using an AES-CBC key. The encryption provider config and key are managed by k3s automatically. Verify with:
+
+```bash
+kubectl get secrets -A -o yaml | head -5     # data is ciphertext in etcd
+sudo cat /var/lib/rancher/k3s/server/cred/encryption-config.json
+```
+
+This means raw Secret YAMLs are never committed to git — even if someone gets access to the etcd snapshot, they can't read secret values without the encryption key on the node. Locally, the `kubectl` API server decrypts them on read.
+
+### App environment variables
+
+This homelab uses plain Kubernetes Secrets for app env vars — no Sealed Secrets or External Secrets Operator. The workflow:
+
+1. Keep a `.env` file locally (gitignored — see `.gitignore` rules)
+2. Create a Secret from it:
+   ```bash
+   kubectl create secret generic <app>-env --from-env-file=.env -n <namespace>
+   ```
+3. Reference it in the Deployment via `envFrom`:
+   ```yaml
+   spec:
+     containers:
+       - envFrom:
+           - secretRef:
+               name: <app>-env
+   ```
+4. The `.env` file values must not have quotes around them — `--from-env-file` treats `"` as literal characters:
+   ```bash
+   # Correct
+   DATABASE_URL=postgresql://user:pass@host:5432/db
+   # Wrong — includes literal quotes
+   DATABASE_URL="postgresql://user:pass@host:5432/db"
+   ```
+
+### DNS and inter-pod connectivity
+
+Pods resolve each other via CoreDNS (10.43.0.10). The `.homelab` domain is **not** resolvable inside the cluster — it's only available on Tailnet devices via AdGuard (see [DNS Architecture](#dns-architecture)).
+
+When one pod needs to reach another service, use the cluster-internal DNS name:
+
+| Instead of | Use |
+|---|---|
+| `postgres.homelab` | `postgres.cloud` or `postgres.cloud.svc.cluster.local` |
+| `minio.homelab` | `minio.cloud` or `minio.cloud.svc.cluster.local` |
+
+Format: `<service-name>.<namespace>` — works for any service within the cluster.
+
+### Pull secrets for private images
 
 ```bash
 kubectl create secret docker-registry ghcr-secret \
@@ -221,3 +268,5 @@ kubectl create secret docker-registry ghcr-secret \
   --docker-username=<github-username> \
   --docker-password=<PAT with read:packages>
 ```
+
+Add `imagePullSecrets` to the Deployment spec (see [Deployments](#deployments) above). Create once per namespace — the secret name is always `ghcr-secret`.
