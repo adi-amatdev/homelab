@@ -17,7 +17,7 @@ spec:
         - name: ghcr-secret
       containers:
         - name: blogs
-          image: ghcr.io/adi-amatdev/blogs:latest
+          image: ghcr.io/adi-amatdev/blog:latest
           ports:
             - containerPort: 3000
           envFrom:
