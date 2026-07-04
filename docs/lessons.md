@@ -3,7 +3,7 @@ type: Lessons Learned
 title: Homelab Lessons Learned
 description: Hard-earned operational lessons from the June 2026 restructure incident, covering pruning, Kustomize, platform changes, and incrementalism.
 tags: [homelab, lessons, kubernetes, operations]
-timestamp: 2026-06-22T00:00:00Z
+timestamp: 2026-07-04T00:00:00Z
 ---
 
 # Lessons Learned
@@ -55,3 +55,39 @@ When something broke, it was impossible to tell which change caused it.
 Hardcoding `.homelab` is simple, readable, and works. Domain parameterization adds complexity with no immediate benefit. Premature abstraction introduced a fragile `vars`/`config` dependency that broke in production.
 
 **Lesson:** Don't parameterize until the parameter actually needs to change. When it does, use a mechanism you understand end-to-end and test before deploying.
+
+---
+
+## 6. `.gitignore` silently eats new files
+
+Patterns like `*-secrets.yaml` in `.gitignore` will silently ignore any new file matching the pattern — including `sealed-secrets.yaml`. No warning, no error, the file just never gets committed. ArgoCD then fails because it can't find the file in the repo.
+
+**Lesson:** After creating any new file in the repo, run `git check-ignore <file>` to confirm it's trackable. Use `git status --short` to verify new files show as `??` (untracked) before adding them.
+
+---
+
+## 7. Two ArgoCD apps can't own the same namespace
+
+Each ArgoCD Application labels resources it manages with `argocd.argoproj.io/instance: <app-name>`. When two apps both include the same `namespace.yaml`, they fight over the labels — ArgoCD's `selfHeal` makes them revert each other's labels indefinitely.
+
+**Lesson:** Only one app should declare `namespace.yaml` for a shared namespace. Additional apps in the same namespace should rely on ArgoCD's `CreateNamespace=true` sync option and omit `namespace.yaml` from their kustomization. Alternatively, move the namespace to a dedicated platform app that owns it once.
+
+---
+
+## 8. Platform components with helmCharts need manual bootstrapping
+
+ArgoCD Applications using Kustomize with `helmCharts` require `--enable-helm` to render. The Application spec's `kustomize.enableHelm` field isn't accepted by all ArgoCD CRD versions. The existing platform components (argocd, traefik) were bootstrapped manually with `kustomize build --enable-helm | kubectl apply -f -` and don't have ArgoCD Application entries for this reason.
+
+**Lesson:** Don't create ArgoCD Applications for kustomizations that use `helmCharts` unless you've verified the CRD supports `kustomize.enableHelm` or you configure it via `argocd-cm`. For platform components, keep the manual bootstrap pattern.
+
+---
+
+## 9. Verify image names against GHCR before deploying
+
+The GitHub Container Registry repo name may differ from the k8s app name. Deploying with `ghcr.io/<org>/blogs` when the image was pushed to `ghcr.io/<org>/blog` causes `ErrImagePull` with no obvious hints. The image tag (`latest` vs SHA) must also exist.
+
+**Lesson:** Before deploying, verify the image exists:
+```bash
+curl -s "https://ghcr.io/v2/<org>/<image>/tags/list" | jq
+```
+Or check the GHCR web UI. Match both the repo name and tag to what the CI actually pushes.

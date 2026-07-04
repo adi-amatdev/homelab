@@ -3,7 +3,7 @@ type: Playbook
 title: Adding a New Application
 description: Step-by-step guide for deploying a new application to the homelab via the GitOps workflow.
 tags: [argocd, gitops, kubernetes, deployment]
-timestamp: 2026-06-25T00:00:00Z
+timestamp: 2026-07-04T00:00:00Z
 ---
 
 # Adding a New App
@@ -67,6 +67,13 @@ git add . && git commit -m "add <your-app>" && git push
 ```
 
 ArgoCD syncs within ~3 minutes. Monitor at `http://argocd.homelab`.
+
+### Pitfalls
+
+- **`.gitignore` traps:** Patterns like `*-secrets.yaml` silently ignore new files. Run `git check-ignore <file>` to confirm a file is trackable.
+- **Namespace ownership:** Only the first app in a namespace should include `namespace.yaml`. Additional apps omit it — ArgoCD's `CreateNamespace=true` handles creation.
+- **Image name mismatch:** The GHCR repo name (`blog`) may differ from the k8s app name (`blogs`). Verify image tags exist at `https://ghcr.io/v2/<org>/<image>/tags/list` before deploying.
+- **helmCharts in ArgoCD Apps:** Don't create ArgoCD Applications for kustomizations with `helmCharts`. Those are bootstrapped manually with `kustomize build --enable-helm | kubectl apply -f -`. See existing platform apps for the pattern.
 
 ---
 

@@ -80,6 +80,28 @@ This was the most iterative phase (see the [full postmortem](/solved/internal-dn
 
 ---
 
+## Phase 5: The Sealed Secrets Detour (July 4)
+
+**Commits: `okf bundle, blogs and sealed secret deployment` → `purge sealed-secrets`**
+
+Attempted to deploy Sealed Secrets for managing environment variables via GitOps. Failed spectacularly:
+
+- The ArgoCD Application file was silently ignored by `.gitignore` (`*-secrets.yaml` pattern)
+- Platform helmCharts kustomizations can't be managed by ArgoCD Applications without `--enable-helm` (the CRD didn't accept our `kustomize.enableHelm` field)
+- Docker-based kubeseal required docker group membership that didn't exist
+- Blogs app namespace conflicted with d2m-test's namespace ownership
+- Image name typo (`blogs` vs `blog`) caused ErrImagePull
+
+**Result:** Sealed Secrets ejected entirely. Blogs app deployed without env vars. If you want secret management in the future, use a different approach — either pre-seal on a machine with the cluster cert, or use External Secrets Operator, or just manage secrets by hand since this is a single-node homelab.
+
+**Lessons (full details in [lessons learned](/lessons.md)):**
+- `.gitignore` silently ignores files matching its patterns — always check with `git check-ignore`
+- Two ArgoCD apps can't own the same namespace via namespace.yaml
+- Verify image names and tags in GHCR before deploying
+- Platform components with helmCharts need manual bootstrapping
+
+---
+
 ## What's Next
 
 - cert-manager for TLS
