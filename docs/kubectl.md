@@ -1,3 +1,11 @@
+---
+type: Reference
+title: kubectl Quick Reference
+description: Cheat sheet for common kubectl commands used in the homelab, covering pods, deployments, ingress, ArgoCD, secrets, and debugging.
+tags: [kubernetes, kubectl, reference, troubleshooting]
+timestamp: 2026-06-25T00:00:00Z
+---
+
 # kubectl Quick Reference
 
 ---

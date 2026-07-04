@@ -1,3 +1,11 @@
+---
+type: Architecture Reference
+title: Homelab Knowledge Manual
+description: Comprehensive reference covering k3s, ArgoCD, Kustomize, Helm, Traefik, cert-manager, DNS architecture, and cluster operations.
+tags: [kubernetes, architecture, reference, homelab]
+timestamp: 2026-06-26T00:00:00Z
+---
+
 # Knowledge Manual
 
 How the pieces fit together in this homelab.
@@ -32,6 +40,8 @@ Key behaviours:
 - `selfHeal: true` — manual cluster changes get reverted to git state within ~3 min
 - `prune: true` — delete a file from git, ArgoCD deletes the resource from the cluster
 - polls every 3 minutes automatically, no manual sync needed
+
+To add a new app, follow the [playbook](/add-app.md).
 
 ---
 

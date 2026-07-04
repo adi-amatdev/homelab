@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: blogs
+  namespace: apps
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: blogs
+  template:
+    metadata:
+      labels:
+        app: blogs
+    spec:
+      imagePullSecrets:
+        - name: ghcr-secret
+      containers:
+        - name: blogs
+          image: ghcr.io/adi-amatdev/blogs:latest
+          ports:
+            - containerPort: 3000
+          envFrom:
+            - secretRef:
+                name: blogs-env

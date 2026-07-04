@@ -1,3 +1,11 @@
+---
+type: Timeline
+title: Homelab Build History
+description: Chronological record of building the homelab, covering foundations, restructuring, stateful services, and DNS.
+tags: [homelab, kubernetes, infrastructure]
+timestamp: 2026-06-26T00:00:00Z
+---
+
 # Homelab History
 
 A chronological record of building this homelab, written so I can turn it into a blog post later.
@@ -31,7 +39,7 @@ This was the defining moment of the project — and the most painful. I tried to
 
 Everything broke. ArgoCD couldn't sync. Traefik went down. I had no ingress, no GitOps. The revert commits tell the story — I rolled back, regrouped, and re-approached one change at a time.
 
-**Lessons etched into memory:**
+**Lessons etched into memory (full details in [lessons learned](/lessons.md)):**
 - `prune: true` deletes entire namespaces, secrets and all
 - Kustomize vars work locally but fail in ArgoCD's different version
 - Platform infra (ingress, GitOps) is critical path — change it in isolation
@@ -58,7 +66,7 @@ Both use hostPath storage under `/home/aadi/store/`. The pattern was set: Kustom
 
 **Commits: `adgaurd fix` → `adgaurd fix` → `adgaurd fix` → `decoupled dns`**
 
-This was the most iterative phase. The goal: replace `/etc/hosts` with proper internal DNS so every device on my Tailnet could resolve `*.homelab` domains.
+This was the most iterative phase (see the [full postmortem](/solved/internal-dns-with-adguard.md)). The goal: replace `/etc/hosts` with proper internal DNS so every device on my Tailnet could resolve `*.homelab` domains.
 
 **Attempt 1 — Service-only (fail):** Deployed AdGuard with a ClusterIP service and Ingress. DNS port 53 wasn't reachable outside the cluster. Tailnet devices couldn't query it.
 

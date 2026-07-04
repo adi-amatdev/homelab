@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: blogs
+  namespace: infra
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/adi-amatdev/homelab
+    targetRevision: HEAD
+    path: k8s/apps/blogs
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: apps
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

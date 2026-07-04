@@ -1,12 +1,22 @@
+---
+type: Postmortem
+title: Internal DNS with AdGuard Home
+description: How AdGuard Home was deployed on hostNetwork to provide internal DNS resolution for tailnet devices, including three failed attempts and the final architecture.
+tags: [dns, adguard, tailscale, networking, kubernetes]
+timestamp: 2026-06-26T00:00:00Z
+---
+
 # Internal DNS with AdGuard Home
 
-How tailnet devices resolve `*.homelab` domains without touching the host or cluster DNS.
+How tailnet devices resolve `*.homelab` domains without touching the host or cluster DNS. See the [DNS architecture overview](/knowledge.md#dns-architecture) for context.
 
 ---
 
 ## Situation
 
 Self-hosted services (MinIO, ArgoCD, apps) needed DNS resolution from tailnet devices. `/etc/hosts` worked for one machine but didn't scale — phones, laptops, and other devices couldn't resolve `.homelab` domains.
+
+For full context, see the [homelab history](/history.md#phase-4-internal-dns-with-adguard-home-june-25-26).
 
 **Constraints:**
 - No public DNS — domains are internal (`*.homelab`)

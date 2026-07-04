@@ -1,8 +1,16 @@
+---
+type: Playbook
+title: Adding a New Application
+description: Step-by-step guide for deploying a new application to the homelab via the GitOps workflow.
+tags: [argocd, gitops, kubernetes, deployment]
+timestamp: 2026-06-25T00:00:00Z
+---
+
 # Adding a New App
 
 3 steps. No `kubectl apply` needed.
 
-The root ArgoCD app watches `argocd-apps/`. Drop a file there, push, it's deployed.
+The root [ArgoCD](/knowledge.md#argocd) app watches `argocd-apps/`. Drop a file there, push, it's deployed.
 
 ---
 
@@ -70,7 +78,7 @@ Until Cloudflared is set up, add each app to `/etc/hosts` on any machine that ne
 echo "<traefik-lb-ip>  <your-app>.homelab" | sudo tee -a /etc/hosts
 ```
 
-Get the Traefik LB IP:
+Get the [Traefik](/knowledge.md#traefik) LB IP:
 ```bash
 kubectl get svc -n infra
 ```
@@ -84,6 +92,8 @@ The app repo needs a GitHub Actions workflow to build and push the image on ever
 ---
 
 ## Private image checklist
+
+See [GHCR pull secrets](/knowledge.md#ghcr) for context.
 
 - [ ] `ghcr-secret` exists in the target namespace
 - [ ] `imagePullSecrets` is set in `deployment.yaml`

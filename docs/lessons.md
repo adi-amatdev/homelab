@@ -1,6 +1,14 @@
+---
+type: Lessons Learned
+title: Homelab Lessons Learned
+description: Hard-earned operational lessons from the June 2026 restructure incident, covering pruning, Kustomize, platform changes, and incrementalism.
+tags: [homelab, lessons, kubernetes, operations]
+timestamp: 2026-06-22T00:00:00Z
+---
+
 # Lessons Learned
 
-Mistakes made during the 2026-06-22 restructure, documented so they don't happen again.
+Mistakes made during the [2026-06-22 restructure](/history.md#phase-2-the-great-restructure-june-22), documented so they don't happen again.
 
 ---
 
