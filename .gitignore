@@ -10,6 +10,8 @@
 *.secrets.yaml
 *-secret.yaml
 *-secrets.yaml
+# SealedSecrets are encrypted — safe to commit
+!sealed-secret*.yaml
 secrets/
 *.pem
 *.key
