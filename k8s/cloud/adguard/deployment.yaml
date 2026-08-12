@@ -17,6 +17,17 @@ spec:
     spec:
       hostNetwork: true
       dnsPolicy: ClusterFirstWithHostNet
+      initContainers:
+        - name: sync-config
+          image: adguard/adguardhome@sha256:1ea34eafe5dc691007946e8eaab7bf46b0de9412f39213d8c06e48b53bf9a6c5
+          command: ["/bin/sh", "-c"]
+          args:
+            - cp /src/AdGuardHome.yaml /conf/AdGuardHome.yaml
+          volumeMounts:
+            - name: conf-src
+              mountPath: /src
+            - name: conf
+              mountPath: /conf
       containers:
         - name: adguard
           image: adguard/adguardhome@sha256:1ea34eafe5dc691007946e8eaab7bf46b0de9412f39213d8c06e48b53bf9a6c5
@@ -37,6 +48,12 @@ spec:
             - name: conf
               mountPath: /opt/adguardhome/conf
       volumes:
+        - name: conf-src
+          configMap:
+            name: adguard-config
+            items:
+              - key: AdGuardHome.yaml
+                path: AdGuardHome.yaml
         - name: work
           hostPath:
             path: /home/aadi/store/adguard-work
