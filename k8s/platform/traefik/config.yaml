@@ -13,6 +13,12 @@ ports:
     port: 443
     exposedPort: 443
     protocol: TCP
+  public:
+    port: 8082
+    exposedPort: 8082
+    expose:
+      default: true
+    protocol: TCP
   private:
     port: 8081
     exposedPort: 8081

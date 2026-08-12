@@ -30,6 +30,7 @@ spec:
       - /s3
 ---
 # PUBLIC (Tailscale Funnel) - https://dhridata.tail6a3e40.ts.net
+# Only this entrypoint is funneled (443 -> 8080), so only these routes are public.
 # Blog at /, public images at /s3/*, /admin intentionally has NO route -> 404.
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
@@ -38,7 +39,7 @@ metadata:
   namespace: apps
 spec:
   entryPoints:
-    - web
+    - public
   routes:
     - match: Host(`dhridata.tail6a3e40.ts.net`) && PathPrefix(`/s3`)
       kind: Rule
