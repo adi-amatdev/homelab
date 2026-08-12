@@ -39,6 +39,13 @@ default. Every `.homelab` Ingress MUST carry
 `templates/service.yaml`). Without it the service leaks onto the funneled
 `public` entrypoint.
 
+**Important:** The `blogs-public` IngressRoute references MinIO across namespaces
+(`cloud/minio`). Traefik's kubernetesCRD provider needs
+`allowCrossNamespace: true` (`k8s/platform/traefik/config.yaml`) or the `/s3`
+router silently never exists. The `/s3` rule also needs `priority: 100` so it
+outranks the `!PathPrefix(/admin)` catch-all (Traefik default priority is rule
+length, and the catch-all wins).
+
 ## Private (Serve) — tailnet only
 
 `https://dhridata.tail6a3e40.ts.net:8443`
