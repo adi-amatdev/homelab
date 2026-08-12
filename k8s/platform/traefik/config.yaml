@@ -19,12 +19,6 @@ ports:
     expose:
       default: true
     protocol: TCP
-  private:
-    port: 8081
-    exposedPort: 8081
-    expose:
-      default: true
-    protocol: TCP
 
 ingressRoute:
   dashboard:

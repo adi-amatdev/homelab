@@ -32,8 +32,8 @@ spec:
       - /s3
 ---
 # PUBLIC (Tailscale Funnel) - https://dhridata.tail6a3e40.ts.net
-# Only this entrypoint is funneled (443 -> 8080), so only these routes are public.
-# Blog at /, public images at /s3/*, /admin intentionally has NO route -> 404.
+# Only this entrypoint is funneled (443 -> 8082), so only these routes are public.
+# Blog at /, public images at /s3/*, admin at /admin.
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
@@ -53,36 +53,15 @@ spec:
         - name: minio
           namespace: cloud
           port: 9000
-    - match: Host(`dhridata.tail6a3e40.ts.net`) && !PathPrefix(`/admin`)
-      kind: Rule
-      services:
-        - name: blogs
-          port: 3000
----
-# PRIVATE (Tailscale Serve on :8443 -> traefik "private" entrypoint) - tailnet only.
-# Full access including /admin at https://dhridata.tail6a3e40.ts.net:8443/admin
-apiVersion: traefik.io/v1alpha1
-kind: IngressRoute
-metadata:
-  name: blogs-private
-  namespace: apps
-spec:
-  entryPoints:
-    - private
-  routes:
     - match: Host(`dhridata.tail6a3e40.ts.net`) && PathPrefix(`/admin`)
       kind: Rule
       priority: 100
       services:
         - name: blogs
           port: 3000
-    - match: Host(`dhridata.tail6a3e40.ts.net`) && PathPrefix(`/s3`)
+    - match: Host(`dhridata.tail6a3e40.ts.net`)
       kind: Rule
-      priority: 100
-      middlewares:
-        - name: strip-s3-prefix
-          namespace: apps
+      priority: 50
       services:
-        - name: minio
-          namespace: cloud
-          port: 9000
+        - name: blogs
+          port: 3000
