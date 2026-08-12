@@ -23,10 +23,9 @@ Host header + path  → the app
 |---|---|---|---|---|
 | `*.homelab` (e.g. `blogs.homelab`) | AdGuard split-DNS (tailnet only) | `100.93.76.126` | **80** | `web` |
 | `dhridata.tail6a3e40.ts.net` | Tailscale MagicDNS (tailnet) **and** Tailscale public DNS (internet) | `100.93.76.126` | **443** (Funnel) | `public` :8082 |
-| `dhridata.tail6a3e40.ts.net` | same as above | `100.93.76.126` | **8443** (Serve) | `private` :8081 |
 
-So `dhridata.tail6a3e40.ts.net:443` and `:8443` reach *different* entrypoints of
-the *same* hostname — the port is the router.
+So the tailnet name and the funnel hostname share the IP; only Funnel `:443` is
+public.
 
 ## Diagram
 
@@ -44,19 +43,17 @@ flowchart TB
         adg["AdGuard Home :53<br/>100.93.76.126 (hostNetwork)"]
         ts["Tailscale on dhridata"]
         funnel["Funnel 443 → 127.0.0.1:8082"]
-        serve["Serve 8443 → 127.0.0.1:8081"]
     end
 
     subgraph node["dhridata — Traefik edge router"]
         e_web["web :80<br/>(NOT funneled)"]
         e_pub["public :8082<br/>(funneled, only public routes)"]
-        e_priv["private :8081<br/>(tailnet only)"]
     end
 
     subgraph k8s["k8s cluster"]
         blog["blogs :3000"]
         minio["minio :9000"]
-        others["argocd · adguard · d2m-test · traefik dashboard"]
+        others["argocd · adguard · traefik dashboard"]
         coredns["CoreDNS 10.43.0.10"]
     end
 
@@ -72,21 +69,13 @@ flowchart TB
     e_web -- "blogs.homelab" --> blog
     e_web -- "s3/minio/adguard/argocd/... .homelab" --> others
 
-    %% dhridata.ts.net — private (tailnet)
-    dev -- "5. query dhridata.tail6a3e40.ts.net" --> mdns
-    mdns -- "6. MagicDNS → 100.93.76.126" --> dev
-    dev -- "7. https://dhridata.tail6a3e40.ts.net:8443" --> serve
-    serve -- "proxies to 127.0.0.1:8081" --> e_priv
-    e_priv -- "/admin, /s3" --> blog
-    e_priv -- "/s3" --> minio
-
     %% dhridata.ts.net — public (internet)
-    pub -- "8. query dhridata.tail6a3e40.ts.net" --> taildns
+    pub -- "5. query dhridata.tail6a3e40.ts.net" --> taildns
     taildns -- "resolves to Funnel edge" --> funneledge
-    pub -- "9. https://dhridata.tail6a3e40.ts.net:443" --> funneledge
+    pub -- "6. https://dhridata.tail6a3e40.ts.net:443" --> funneledge
     funneledge -- "WireGuard tunnel" --> funnel
     funnel -- "proxies to 127.0.0.1:8082" --> e_pub
-    e_pub -- "/ → blog (public), /s3/* → minio" --> blog
+    e_pub -- "/, /admin → blog (public), /s3/* → minio" --> blog
     e_pub --> minio
 
     %% in-cluster DNS
@@ -107,7 +96,7 @@ Pods never use `.homelab` — the blog connects to `postgres.cloud:5432`, not
 ## Common confusion
 
 - **Same IP, different result** — `100.93.76.126` is the answer to both
-  `blogs.homelab` and `dhridata.tail6a3e40.ts.net`. The port (`80`/`443`/`8443`)
+  `blogs.homelab` and `dhridata.tail6a3e40.ts.net`. The port (`80`/`443`)
   picks the Traefik entrypoint, then Host+path picks the app.
 - **`.ts.net` is not only MagicDNS** — the same name is resolvable on the public
   internet by Tailscale's DNS, which is what makes Funnel work without a public

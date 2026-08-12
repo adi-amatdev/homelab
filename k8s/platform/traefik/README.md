@@ -6,14 +6,13 @@ Ingress controller / edge router. Applied manually (not self-managed).
 
 | Entrypoint | Port | Notes |
 |---|---|---|
-| `web` | 80 | Public + tailnet/LAN HTTP, reached by Tailscale Funnel (443->80) |
+| `web` | 80 | Tailnet/LAN `.homelab` HTTP, NOT funneled |
+| `public` | 8082 | Funneled to the internet (443->8082); carries blog `/`, `/admin`, `/s3/*` |
 | `websecure` | 443 | TLS termination (unused for now) |
-| `private` | 8081 | Tailnet-only, reached by Tailscale Serve (8443->8081) for admin routes |
 
 | Where | URL / address |
 |---|---|
 | Dashboard (Tailnet/LAN HTTP) | http://traefik.homelab/dashboard |
-| Private entrypoint | 127.0.0.1:8081 / 192.168.1.21:8081 |
 | In-cluster | traefik.infra.svc |
 
 Routes come from Kubernetes Ingresses and Traefik IngressRoutes (CRDs).

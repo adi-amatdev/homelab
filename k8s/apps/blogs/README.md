@@ -8,16 +8,16 @@ Personal blog (Next.js). GitOps via ArgoCD.
 |---|---|
 | Public (Tailscale Funnel) | https://dhridata.tail6a3e40.ts.net |
 | Public images | https://dhridata.tail6a3e40.ts.net/s3/blogs/... |
-| Admin (Tailscale Serve, tailnet only) | https://dhridata.tail6a3e40.ts.net:8443/admin |
+| Admin (public, password-protected) | https://dhridata.tail6a3e40.ts.net/admin |
 | Tailnet/LAN HTTP | http://blogs.homelab |
 | In-cluster | http://blogs.apps.svc:3000 |
 
-`/admin` on the public host has no route -> 404. Admin only exists on the private
-entrypoint (`:8443/admin`), reachable over the tailnet only.
+`/admin` is served on the public entrypoint (protected by the app's password).
+The blog is a single entrypoint (`public`), no separate private admin entrypoint.
 
 ## Config
 
 - Image: `ghcr.io/adi-amatdev/blog:latest`
 - Env: `blogs-env` secret (created from `.env`, which is gitignored — rebuild with
   `kubectl create secret generic blogs-env --from-env-file=.env -n apps`)
-- Routing: `ingress.yaml` (public + private IngressRoutes, `/s3` prefix strip)
+- Routing: `ingress.yaml` (public IngressRoute, `/s3` prefix strip)

@@ -35,12 +35,11 @@ One rule: **git is the source of truth**. Never `kubectl apply` manually unless 
 |---|---|---|
 | ArgoCD | `infra` | argocd.homelab |
 | Traefik | `infra` | traefik.homelab (dashboard) |
-| Blog | `apps` | **Public**: dhridata.tail6a3e40.ts.net (Funnel). **Admin**: dhridata.tail6a3e40.ts.net:8443/admin (Serve, tailnet only). `/admin` blocked on public host |
+| Blog | `apps` | **Public** (Funnel): dhridata.tail6a3e40.ts.net — blog `/`, admin `/admin`, images `/s3/*` |
 | MinIO | `cloud` | minio.homelab, s3.homelab; public images via blog host `/s3/*` |
 | PostgreSQL | `cloud` | postgres.cloud.svc.cluster.local:5432 (ClusterIP only, never public) |
 | Redis | `cloud` | redis.cloud.svc.cluster.local:6379 (ClusterIP only, never public) |
 | AdGuard Home | `cloud` | adguard.homelab (admin); tailnet-ip:53 (DNS) |
-| d2m-test | `apps` | d2m-test.homelab |
 
 Full exposure map: see `docs/exposure.md`.
 
@@ -59,7 +58,6 @@ k8s/
     redis/
     adguard/
   apps/                  — personal projects
-    d2m-test/
 argocd-apps/             — app-of-apps registry (auto-synced by root)
   root.yaml              — the only manifest ever manually applied
   cloud/                 — ArgoCD Applications for cloud services

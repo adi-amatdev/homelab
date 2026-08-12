@@ -88,8 +88,8 @@ browser → myapp.homelab
 
 Config lives in `k8s/platform/traefik/config.yaml`. Every Ingress resource needs `ingressClassName: traefik`.
 
-Three entrypoints: `web` (80, tailnet `.homelab`), `public` (8082, funneled to the
-internet), `private` (8081, tailnet Serve). Plain Ingress routes attach to **every**
+Two entrypoints: `web` (80, tailnet `.homelab`) and `public` (8082, funneled to the
+internet). Plain Ingress routes attach to **every**
 entrypoint by default — so every `.homelab` Ingress must pin itself off the public
 funnel with `traefik.ingress.kubernetes.io/router.entrypoints: web`, otherwise the
 service becomes reachable from the internet via Host-header spoofing. See
@@ -133,7 +133,7 @@ Browser connects to 100.93.76.126:80
 
 The Tailscale name `dhridata.tail6a3e40.ts.net` resolves via MagicDNS to the same
 IP, and its **port** picks the entrypoint: `:80`/`.homelab` → `web`,
-`:8443` (Serve) → `private`, `:443` (Funnel) → `public`. Full flow:
+`:443` (Funnel) → `public`. Full flow:
 see [`docs/dns.md`](dns.md).
 
 ### Pods inside cluster
