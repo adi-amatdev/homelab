@@ -30,8 +30,14 @@ public.
 | `/admin` | — | No route → 404 |
 
 Everything else lives on the `web` entrypoint. Because Funnel points at `public`
-(8080) — never `web` — `.homelab` apps can't be reached from the internet, even
+(8082) — never `web` — `.homelab` apps can't be reached from the internet, even
 by spoofing the Host header.
+
+**Important:** Traefik attaches plain `Ingress` routes to *every* entrypoint by
+default. Every `.homelab` Ingress MUST carry
+`traefik.ingress.kubernetes.io/router.entrypoints: web` (see the
+`templates/service.yaml`). Without it the service leaks onto the funneled
+`public` entrypoint.
 
 ## Private (Serve) — tailnet only
 

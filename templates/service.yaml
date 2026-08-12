@@ -15,6 +15,11 @@ kind: Ingress
 metadata:
   name: <your-app>
   namespace: <namespace>        # apps | cloud | ai
+  annotations:
+    # REQUIRED: keep *.homelab routes off the public (funneled) entrypoint.
+    # Without this, Traefik attaches the route to every entrypoint and the
+    # service becomes reachable from the internet via Host-header spoofing.
+    traefik.ingress.kubernetes.io/router.entrypoints: web
 spec:
   ingressClassName: traefik
   rules:

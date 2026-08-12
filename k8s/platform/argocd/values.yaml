@@ -10,3 +10,5 @@ server:
     enabled: true
     ingressClassName: traefik
     hostname: argocd.homelab
+    annotations:
+      traefik.ingress.kubernetes.io/router.entrypoints: web
