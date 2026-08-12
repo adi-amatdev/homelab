@@ -9,6 +9,8 @@ Documentation for a single-node k3s homelab running ArgoCD, Traefik, and interna
 ## Concepts
 
 - [Architecture Reference](/knowledge.md) — How the pieces fit together (k3s, ArgoCD, Kustomize, Traefik, DNS)
+- [DNS & Traffic Flows](/dns.md) — How names resolve and traffic reaches each service (Tailscale + AdGuard + Traefik)
+- [Exposure Strategy](/exposure.md) — What is public vs tailnet-only, entrypoints and routes
 - [Adding a New Application](/add-app.md) — Playbook for deploying a new app via GitOps
 - [kubectl Quick Reference](/kubectl.md) — Cheat sheet for common commands
 - [Build History](/history.md) — Chronological record of the homelab build

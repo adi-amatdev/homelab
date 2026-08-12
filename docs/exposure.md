@@ -10,6 +10,11 @@ and public vs private is separated at the **Traefik entrypoint** level. Only the
 `public` entrypoint is ever funneled, so whatever it carries is all that can be
 public.
 
+**DNS/name resolution:** `*.homelab` (AdGuard split-DNS) and
+`dhridata.tail6a3e40.ts.net` (MagicDNS/public DNS) both resolve to
+`100.93.76.126` — the **port** you connect on picks the entrypoint. See
+[dns.md](./dns.md) for the full flow diagram.
+
 | Entrypoint | Port | Reached by | Routes |
 |---|---|---|---|
 | `public` | 8082 | Tailscale Funnel (public, 443→8082) | blog `/`, images `/s3/*` (Host `dhridata.tail6a3e40.ts.net`). `/admin` has no route → 404 |

@@ -124,6 +124,11 @@ Browser connects to 100.93.76.126:80
     → Ingress matches Host header → routes to service → pod
 ```
 
+The Tailscale name `dhridata.tail6a3e40.ts.net` resolves via MagicDNS to the same
+IP, and its **port** picks the entrypoint: `:80`/`.homelab` → `web`,
+`:8443` (Serve) → `private`, `:443` (Funnel) → `public`. Full flow:
+see [`docs/dns.md`](dns.md).
+
 ### Pods inside cluster
 ```
 Container → CoreDNS (10.43.0.10) → NXDOMAIN for .homelab
