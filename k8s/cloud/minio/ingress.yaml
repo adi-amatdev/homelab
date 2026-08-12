@@ -1,0 +1,31 @@
+# minio exposure.
+# Public images: served from the public blog host via /s3 (Traefik route in apps/blogs, minio port 9000).
+# S3 API + console: tailnet/LAN HTTP only (s3.homelab, minio.homelab). Never funneled publicly.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: minio
+  namespace: cloud
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: s3.homelab
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: minio
+                port:
+                  number: 9000
+    - host: minio.homelab
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: minio
+                port:
+                  number: 9001

@@ -13,9 +13,9 @@ ports:
     port: 443
     exposedPort: 443
     protocol: TCP
-  postgres:
-    port: 5432
-    exposedPort: 5432
+  private:
+    port: 8081
+    exposedPort: 8081
     expose:
       default: true
     protocol: TCP

@@ -35,11 +35,14 @@ One rule: **git is the source of truth**. Never `kubectl apply` manually unless 
 |---|---|---|
 | ArgoCD | `infra` | argocd.homelab |
 | Traefik | `infra` | traefik.homelab (dashboard) |
-| MinIO | `cloud` | minio.homelab, s3.homelab |
-| PostgreSQL | `cloud` | postgres.cloud.svc.cluster.local:5432 |
-| Redis | `cloud` | redis.cloud.svc.cluster.local:6379 |
-| AdGuard Home | `cloud` | adguard.homelab (admin), tailnet-ip:53 (DNS) for tailnet-device access |
+| Blog | `apps` | **Public**: dhridata.tail6a3e40.ts.net (Funnel). **Admin**: dhridata.tail6a3e40.ts.net:8443/admin (Serve, tailnet only). `/admin` blocked on public host |
+| MinIO | `cloud` | minio.homelab, s3.homelab; public images via blog host `/s3/*` |
+| PostgreSQL | `cloud` | postgres.cloud.svc.cluster.local:5432 (ClusterIP only, never public) |
+| Redis | `cloud` | redis.cloud.svc.cluster.local:6379 (ClusterIP only, never public) |
+| AdGuard Home | `cloud` | adguard.homelab (admin); tailnet-ip:53 (DNS) |
 | d2m-test | `apps` | d2m-test.homelab |
+
+Full exposure map: see `docs/exposure.md`.
 
 ---
 

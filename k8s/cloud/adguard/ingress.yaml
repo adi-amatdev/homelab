@@ -1,0 +1,21 @@
+# adguard exposure.
+# Tailnet/LAN HTTP only (adguard.homelab). DNS binds 100.93.76.126:53.
+# Never expose the admin UI publicly.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: adguard
+  namespace: cloud
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: adguard.homelab
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: adguard
+                port:
+                  number: 80
