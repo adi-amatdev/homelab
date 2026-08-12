@@ -88,6 +88,13 @@ browser → myapp.homelab
 
 Config lives in `k8s/platform/traefik/config.yaml`. Every Ingress resource needs `ingressClassName: traefik`.
 
+Three entrypoints: `web` (80, tailnet `.homelab`), `public` (8082, funneled to the
+internet), `private` (8081, tailnet Serve). Plain Ingress routes attach to **every**
+entrypoint by default — so every `.homelab` Ingress must pin itself off the public
+funnel with `traefik.ingress.kubernetes.io/router.entrypoints: web`, otherwise the
+service becomes reachable from the internet via Host-header spoofing. See
+[`docs/exposure.md`](exposure.md).
+
 ArgoCD is configured with `server.insecure: true` — TLS terminates at Traefik, not the app.
 
 ---

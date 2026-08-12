@@ -70,6 +70,11 @@ ArgoCD syncs within ~3 minutes. Monitor at `http://argocd.homelab`.
 
 ### Pitfalls
 
+- **Public leak (critical):** Traefik attaches plain `Ingress` routes to *every*
+  entrypoint. Every `.homelab` Ingress MUST carry the annotation
+  `traefik.ingress.kubernetes.io/router.entrypoints: web`, or it appears on the
+  funneled `public` entrypoint and is reachable from the internet by spoofing the
+  Host header. The template already includes it — don't remove it.
 - **`.gitignore` traps:** Patterns like `*-secrets.yaml` silently ignore new files. Run `git check-ignore <file>` to confirm a file is trackable.
 - **Namespace ownership:** Only the first app in a namespace should include `namespace.yaml`. Additional apps omit it — ArgoCD's `CreateNamespace=true` handles creation.
 - **Image name mismatch:** The GHCR repo name (`blog`) may differ from the k8s app name (`blogs`). Verify image tags exist at `https://ghcr.io/v2/<org>/<image>/tags/list` before deploying.
